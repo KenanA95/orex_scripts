@@ -2,6 +2,12 @@ import os
 import pickle
 from orex_setup import TagCamsCamera
 from datetime import datetime, timedelta
+import numpy as np
+from skimage.feature import canny
+from skimage.transform import probabilistic_hough_line
+from matplotlib import pyplot as plt
+
+# Script purpose: Identify potential streaks/particles in a set of images
 
 
 # Load in an instance of TagCamsCamera with images from the given directory
@@ -40,3 +46,31 @@ def parse_time(obsdate):
     # Adjust to UTC timezone
     time = time - timedelta(hours=6)
     return time
+
+
+def draw_lines(lines):
+    for line in lines:
+        p0, p1 = line
+        plt.plot((p0[0], p1[0]), (p0[1], p1[1]))
+
+
+if __name__ == "__main__":
+
+    directory = 'C:/Users/kalkiek/Desktop/repos/data/navcam2/DOY100/'
+
+    navcam2 = load_tagcam(directory)
+
+    for index, im in enumerate(navcam2.images):
+        # Correct orientation
+        im = np.fliplr(im)
+
+        # No sigma because if you smooth the image you'll lose the dim streaks
+        edges = canny(im, sigma=0)
+        lines = probabilistic_hough_line(edges, threshold=5, line_length=7,
+                                         line_gap=1)
+
+        print("Index {0}: Line Count {1}".format(index, len(lines)))
+
+        plt.imshow(im, cmap='gray', interpolation='none')
+        draw_lines(lines)
+        plt.show()
