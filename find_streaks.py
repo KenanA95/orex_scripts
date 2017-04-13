@@ -48,10 +48,42 @@ def parse_time(obsdate):
     return time
 
 
-def draw_lines(lines):
+def plot_lines(lines):
     for line in lines:
         p0, p1 = line
         plt.plot((p0[0], p1[0]), (p0[1], p1[1]))
+
+
+# Distance between two points
+def distance(point_one, point_two):
+    x1, y1 = point_one
+    x2, y2 = point_two
+    return np.sqrt((x2 - x1)**2 + (y2-y1)**2)
+
+
+# Most of the lines repeat next to each other
+# Only count the lines that are not neighbors
+# TODO: Refactor
+def count_unique_lines(lines):
+
+    unique_points = []
+
+    for line in lines:
+        starting_point = line[0]
+        # Add the first line in the list
+        if not unique_points:
+            unique_points.append(starting_point)
+
+        else:
+            is_unique = True
+            for point in unique_points:
+                if distance(starting_point, point) < 25:
+                    is_unique = False
+
+            if is_unique:
+                unique_points.append(starting_point)
+
+    return len(unique_points)
 
 
 if __name__ == "__main__":
@@ -70,8 +102,8 @@ if __name__ == "__main__":
                                          line_gap=1)
 
         time = parse_time(im.obsdate)
-        print("Index {0}: Line Count {1}".format(index, len(lines)))
+        print("Index {0}: Streak Count {1}".format(index, count_unique_lines(lines)))
 
-        plt.imshow(im, cmap='gray', interpolation='none')
-        draw_lines(lines)
-        plt.show()
+        # plt.imshow(im, cmap='gray', interpolation='none')
+        # plot_lines(lines)
+        # plt.show()
