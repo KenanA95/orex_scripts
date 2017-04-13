@@ -56,7 +56,7 @@ def draw_lines(lines):
 
 if __name__ == "__main__":
 
-    directory = 'C:/Users/kalkiek/Desktop/repos/data/navcam2/DOY100/'
+    directory = 'C:/Users/kalkiek/Desktop/repos/data/navcam2/DAY100/'
 
     navcam2 = load_tagcam(directory)
 
@@ -69,6 +69,7 @@ if __name__ == "__main__":
         lines = probabilistic_hough_line(edges, threshold=5, line_length=7,
                                          line_gap=1)
 
+        time = parse_time(im.obsdate)
         print("Index {0}: Line Count {1}".format(index, len(lines)))
 
         plt.imshow(im, cmap='gray', interpolation='none')

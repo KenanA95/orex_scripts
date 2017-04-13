@@ -16,7 +16,7 @@ def get_grid(arr, center, size):
 
 if __name__ == "__main__":
 
-    directory = 'C:/Users/kalkiek/Desktop/repos/data/navcam2/DOY100/'
+    directory = 'C:/Users/kalkiek/Desktop/repos/data/navcam2/DAY100/'
 
     navcam2 = load_tagcam(directory)
 
