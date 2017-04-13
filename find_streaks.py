@@ -1,6 +1,7 @@
 import os
 import pickle
 from orex_setup import TagCamsCamera
+from datetime import datetime, timedelta
 
 
 # Load in an instance of TagCamsCamera with images from the given directory
@@ -22,3 +23,20 @@ def load_tagcam(directory):
     navcam = TagCamsCamera(images=images, model=ncmodel, cam_name="navcam", spacecraft_name="orex")
 
     return navcam
+
+
+# Dates comes in the format 2017.234324 have to convert that fraction
+# into a precise date
+def parse_time(obsdate):
+
+    fraction = str(obsdate)[4:]
+    days = float(fraction) * 365.25
+
+    # Just in case someone uses this in 2018
+    current_year = str(datetime.today().year)
+    start_date = datetime.strptime('01-01-' + current_year, '%d-%m-%Y')
+    time = start_date + timedelta(days=days)
+
+    # Adjust to UTC timezone
+    time = time - timedelta(hours=6)
+    return time
