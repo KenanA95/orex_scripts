@@ -3,6 +3,7 @@ from extract_stars import brightest_locations, extract_locations
 from scipy import ndimage
 from skimage.filters import threshold_otsu
 import numpy as np
+from skimage.feature import register_translation
 
 
 # Purpose: Point-to-point correspondence between star centroids to model the spacecraft motion
@@ -28,6 +29,16 @@ def centroid_shift(im_one, im_two, star_locations):
         y_diffs.append(c1[1] - c2[1])
 
     return np.mean(x_diffs), np.mean(y_diffs)
+
+
+# "This code gives the same precision as the FFT upsampled cross-correlation
+# in a fraction of the computation time and with reduced memory requirements.
+# It obtains an initial estimate of the cross-correlation peak by an FFT and
+# then refines the shift estimation by upsampling the DFT only in a small neighborhood
+# of that estimate by means of a matrix-multiply DFT."
+def fourier_shift(im_one, im_two):
+    shift, error, _ = register_translation(im_one, im_two)
+    return shift, error
 
 
 if __name__ == "__main__":
