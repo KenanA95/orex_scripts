@@ -13,8 +13,7 @@ def stowcam_diff(im, im_l14):
     im_l14 *= 0.86133
 
     # Estimated saturation threshold
-    saturated = im.max() * 0.7
-
+    saturated = im.max() * 0.75
     sat_locations = np.where(im >= saturated)
     sat_locations_l14 = np.where(im_l14 >= saturated)
 
@@ -27,6 +26,54 @@ def stowcam_diff(im, im_l14):
     scale = difference.max() / 255
     difference /= scale
     return difference
+
+
+# We know that there is an increase of illumination on the src from the right to the left of the image
+# If burn off is occurring, there will be a greater difference DN as we move along the src
+# To test for this we compare the differences of 'panels' across the image of size 70x170
+def get_panels(im):
+    top_panels, bottom_panels = [], []
+
+    for index in range(200, len(im)-200, 70):
+        top_panels.append(im[800:970, index:index + 70])
+        bottom_panels.append(im[1054:1224, index:index+70])
+
+    return top_panels, bottom_panels
+
+
+# TODO: Refactor
+# Separate according to bayer filter color and plot the difference across the image
+def plot_panel_diff(difference_image):
+
+    avgs, stds = {'r': [], 'b': [], 'g': []}, {'r': [], 'b': [], 'g': []}
+    top_panels, bottom_panels = get_panels(difference_image)
+
+    for index in range(len(top_panels)):
+        top, bottom = top_panels[index], bottom_panels[index]
+
+        red = top[::2, ::2]
+        blue = top[1::2, 1::2]
+        green_odd = top[1::2, ::2]
+        green_even = top[::2, 1::2]
+        green = np.concatenate((green_even.ravel(), green_odd.ravel()))
+
+        avgs['r'].append(red.mean())
+        stds['r'].append(red.std())
+
+        avgs['b'].append(blue.mean())
+        stds['b'].append(blue.std())
+
+        avgs['g'].append(green.mean())
+        stds['g'].append(green.std())
+
+    index = [i for i in range(len(avgs['b']))]
+
+    plt.xlabel('Panel Top Section #')
+    plt.ylabel('Average DN Difference (Left to Right)')
+    plt.errorbar(index, avgs['b'], yerr=np.divide(stds['b'], 2), c='b')
+    plt.errorbar(index, avgs['g'], yerr=np.divide(stds['g'], 2), c='g')
+    plt.errorbar(index, avgs['r'], yerr=np.divide(stds['r'], 2), c='r')
+    plt.show()
 
 
 if __name__ == "__main__":
@@ -50,3 +97,5 @@ if __name__ == "__main__":
         print(diff.mean(), diff.std())
         plt.imshow(diff, cmap='gray')
         plt.show()
+
+        plot_panel_diff(diff)
