@@ -1,4 +1,5 @@
-from find_streaks import load_tagcam, parse_time
+from load_tagcam import load_tagcam
+from find_streaks import parse_time
 import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.patches as mpatches

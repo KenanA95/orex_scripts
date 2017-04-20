@@ -1,4 +1,4 @@
-from find_streaks import load_tagcam
+from load_tagcam import load_tagcam
 from extract_stars import brightest_locations, extract_locations
 from scipy import ndimage
 from skimage.filters import threshold_otsu

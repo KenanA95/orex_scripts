@@ -1,4 +1,4 @@
-from find_streaks import load_tagcam
+from load_tagcam import load_tagcam
 import numpy as np
 from matplotlib import pyplot as plt
 
