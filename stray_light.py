@@ -19,7 +19,7 @@ if __name__ == "__main__":
 
     directory = 'C:/Users/kalkiek/Desktop/repos/data/navcam2/DAY100/'
 
-    navcam2 = load_tagcam(directory)
+    navcam2 = load_tagcam(directories=[directory])
 
     for index, im in enumerate(navcam2.images):
         # Correct orientation
