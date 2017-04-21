@@ -15,7 +15,7 @@ def in_bounds(coords):
 def active_neighbor(im, coords, active_threshold):
     x, y = coords
 
-    # TODO Simplify
+    # Probably a better way to do this
     neighbors = [(x, y - 1), (x + 1, y - 1), (x - 1, y - 1), (x + 1, y), (x - 1, y),
                  (x, y + 1), (x + 1, y + 1), (x - 1, y + 1)]
 
@@ -46,11 +46,11 @@ def active_overlap(navcam, sigma):
         active_threshold = im.mean() + (sigma * im.std())
         active_coords[index] = active_coordinates(im, active_threshold)
 
-    # This returns the intersection for the sets of active coordinates
+    # Return the intersection for the sets of active coordinates
     return list(set.intersection(*active_coords.values()))
 
 
-# Get the value of every hot pixel across all images
+# Get the value of every hot pixel across all images to compare statistics
 def get_hp_values(images, overlap):
     hp_values = defaultdict(list)
 
@@ -78,6 +78,4 @@ if __name__ == "__main__":
     # Display the overlap on a navcam image
     plt.imshow(navcam1.images[20], cmap='gray', interpolation='nearest')
     plt.scatter(x_overlap, y_overlap, color='none', edgecolors='red', linewidths=1)
-    plt.axis('off')
-    plt.savefig('hot_pixels.png',)
     plt.show()
