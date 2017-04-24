@@ -2,12 +2,15 @@ from load_tagcam import load_tagcam
 import numpy as np
 from matplotlib import pyplot as plt
 
-# Purpose: On 3/16/17 new images of the StowCam arrived. The src has a black spot, and it is unsure
-# of whether it is a particulate or burn off is occurring. To get a better understanding this program
-# takes the difference between the new images and the launch 14 day images.
+""" On 3/16/17 new images of the StowCam arrived. The src has a black spot, and it is unsure
+of whether it is a particulate or burn off is occurring. To get a better understanding this program
+takes the difference between the new images and the launch 14 day images.
+
+"""
 
 
 def stowcam_diff(im, im_l14):
+    """Find the difference between the launch 14 day image and the new image (3/16/17). Ignore saturated pixels"""
 
     # Multiply the launch 14 day images by a heliocentric factor to adjust for them being closer to the sun
     im_l14 *= 0.86133
@@ -28,10 +31,11 @@ def stowcam_diff(im, im_l14):
     return difference
 
 
-# We know that there is an increase of illumination on the src from the right to the left of the image
-# If burn off is occurring, there will be a greater difference DN as we move along the src
-# To test for this we compare the differences of 'panels' across the image of size 70x170
 def get_panels(im):
+    """We know that there is an increase of illumination on the src from the right to the left of the image
+    If burn off is occurring, there will be a greater difference DN as we move along the src
+    To test for this we compare the differences of 'panels' across the image of size 70x170"""
+
     top_panels, bottom_panels = [], []
 
     for index in range(200, len(im)-200, 70):
@@ -41,10 +45,10 @@ def get_panels(im):
     return top_panels, bottom_panels
 
 
-# TODO: Refactor
-# Separate according to bayer filter color and plot the difference across the image
+# TODO Refactor
 def plot_panel_diff(difference_image):
-
+    """Separate DN values according to bayer filter color and plot the difference across the image"""
+    
     avgs, stds = {'r': [], 'b': [], 'g': []}, {'r': [], 'b': [], 'g': []}
     top_panels, bottom_panels = get_panels(difference_image)
 
@@ -76,13 +80,14 @@ def plot_panel_diff(difference_image):
     plt.show()
 
 
+# Example Usage
 if __name__ == "__main__":
 
     directory = 'C:/Users/kalkiek/Desktop/repos/data/stowcam/3-16-17/'
     directory_l14 = 'C:/Users/kalkiek/Desktop/repos/data/stowcam/L14/'
 
-    stowcam = load_tagcam(directory)
-    stowcam_l14 = load_tagcam(directory_l14)
+    stowcam = load_tagcam(directories=[directory])
+    stowcam_l14 = load_tagcam(directories=[directory_l14])
 
     if len(stowcam.images) != len(stowcam_l14.images):
         print("Incorrect number of files provided")
