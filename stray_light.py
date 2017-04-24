@@ -4,17 +4,24 @@ import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.patches as mpatches
 
-# Script purpose: Plot stray light in the image corners over time to compare with
-# orex sun angle
+__doc__ = """Plot stray light in the image corners over time to compare with orex sun angle """
 
 
-def get_grid(arr, center, size):
+def get_grid(im, center, size):
+    """Extract a sub-matrix from the image array around a given point
+
+    :param im: The image to extract the sub-matrix from
+    :param center: The center of the grid to be extracted
+    :param size: The diameter of the grid. Ex. size=5 -> grid=5x5
+    :return: A sub-matrix from the image around the center coordinates provided
+    """
     offset = int((size - 1) / 2)
 
-    return arr[center[0] - offset:center[0] + offset + 1,
-               center[1] - offset:center[1] + offset + 1]
+    return im[center[0] - offset:center[0] + offset + 1,
+              center[1] - offset:center[1] + offset + 1]
 
 
+# Example usage
 if __name__ == "__main__":
 
     directory = 'C:/Users/kalkiek/Desktop/repos/data/navcam2/DAY100/'

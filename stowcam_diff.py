@@ -2,15 +2,20 @@ from load_tagcam import load_tagcam
 import numpy as np
 from matplotlib import pyplot as plt
 
-""" On 3/16/17 new images of the StowCam arrived. The src has a black spot, and it is unsure
+__doc__ = """
+On 3/16/17 new images of the StowCam arrived. The src has a black spot, and it is unsure
 of whether it is a particulate or burn off is occurring. To get a better understanding this program
 takes the difference between the new images and the launch 14 day images.
-
 """
 
 
 def stowcam_diff(im, im_l14):
-    """Find the difference between the launch 14 day image and the new image (3/16/17). Ignore saturated pixels"""
+    """ Find the difference between the launch 14 day image and the new image (3/16/17). Ignore saturated pixels
+
+    :param im: The new image received on 3/16/17
+    :param im_l14: The launch 14 day image with the same exposure time as the new image
+    :return: The difference image
+    """
 
     # Multiply the launch 14 day images by a heliocentric factor to adjust for them being closer to the sun
     im_l14 *= 0.86133
@@ -33,8 +38,12 @@ def stowcam_diff(im, im_l14):
 
 def get_panels(im):
     """We know that there is an increase of illumination on the src from the right to the left of the image
-    If burn off is occurring, there will be a greater difference DN as we move along the src
-    To test for this we compare the differences of 'panels' across the image of size 70x170"""
+    If burn off is occurring, there will be a greater difference DN as we move along the src. To test for this
+    we compare the differences of 'panels' across the image of size 70x170
+
+    :param im: The difference image to extract the panels from
+    :return: 70x170 panels from the top and bottom half of the capsule
+    """
 
     top_panels, bottom_panels = [], []
 
@@ -47,8 +56,12 @@ def get_panels(im):
 
 # TODO Refactor
 def plot_panel_diff(difference_image):
-    """Separate DN values according to bayer filter color and plot the difference across the image"""
-    
+    """ Separate DN values according to bayer filter color and plot the difference across the image
+
+    :param difference_image: The difference image of the new image and the launch 14 day equivalent
+    :return:
+    """
+
     avgs, stds = {'r': [], 'b': [], 'g': []}, {'r': [], 'b': [], 'g': []}
     top_panels, bottom_panels = get_panels(difference_image)
 
@@ -80,7 +93,7 @@ def plot_panel_diff(difference_image):
     plt.show()
 
 
-# Example Usage
+# Example usage
 if __name__ == "__main__":
 
     directory = 'C:/Users/kalkiek/Desktop/repos/data/stowcam/3-16-17/'

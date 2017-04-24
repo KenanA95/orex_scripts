@@ -5,25 +5,36 @@ from skimage.filters import threshold_otsu
 import numpy as np
 from skimage.feature import register_translation
 
-""" Point-to-point correspondence between star centroids to model the spacecraft motion
+__doc__ = """
+Point-to-point correspondence between star centroids to model the spacecraft motion
 during the launch 14 day images
-
 """
 
 
 def calculate_centroid(im):
-    """Find the centroid for the image of a star"""
+    """Find the centroid for the image of a star
+
+    :param im: Image of a star
+    :return: The centroid of the star
+    """
 
     # Otsu's method assumes the image is a bimodal distribution and finds the best threshold value
-    # to split them. In this case the star and background are the two distributions. Thresholding
-    # the images in this manner was comparatively proven to produce better results
+    # to split them. In this case, the star and background are the two distributions. Thresholding
+    # the images in this manner has comparatively proven to produce better results
     thresh = threshold_otsu(im)
     binary = im > thresh
     return ndimage.measurements.center_of_mass(binary)[::-1]
 
 
 def centroid_shift(im_one, im_two, star_locations):
-    """ Find the x and y translations of stars between images by tracking average centroid movement"""
+    """Find the x and y translations of stars between images by tracking average centroid movement
+
+    :param im_one: Starting image
+    :param im_two: Offset image
+    :param star_locations: Locations of the stars to track
+    :return: Average x, y centroid movement
+    """
+
     stars_one = extract_locations(im_one, star_locations, size=9)
     stars_two = extract_locations(im_two, star_locations, size=9)
 
@@ -39,10 +50,14 @@ def centroid_shift(im_one, im_two, star_locations):
 
 
 def fourier_shift(im_one, im_two):
-    """This code gives the same precision as the FFT upsampled cross-correlation
-    in a fraction of the computation time and with reduced memory requirements.
-    It obtains an initial estimate of the cross-correlation peak by an FFT and
-    then refines the shift estimation by upsampling the DFT only in a small neighborhood"""
+    """This code gives the same precision as the FFT upsampled cross-correlation in a fraction of the computation
+    time and with reduced memory requirements. It obtains an initial estimate of the cross-correlation peak by an
+    FFT and then refines the shift estimation by upsampling the DFT only in a small neighborhood
+
+    :param im_one: Starting image
+    :param im_two: Offset image
+    :return: The shift between the images along with the range of error
+    """
 
     shift, error, _ = register_translation(im_one, im_two)
     return shift, error
@@ -58,7 +73,7 @@ if __name__ == "__main__":
     navcam2 = load_tagcam(nc2_directory)
 
     # Locations of the 10 brightest stars according to the longest exposure image
-    nc1_locations = brightest_locations(navcam1.images[-1], n=20, sigma=2)
+    nc1_locations = brightest_locations(navcam1.images[-1], n=10, sigma=2)
     nc2_locations = brightest_locations(navcam2.images[-1], n=10, sigma=2)
 
     diffs = centroid_shift(np.array(navcam1.images[-3]).astype(float),

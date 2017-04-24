@@ -2,6 +2,11 @@ import os
 from gorila.cameramodels import BrownModel
 from orex_setup import TagCamsCamera
 
+__doc__ = """
+Read in the raw TAGCAMS files in a directory and correct the distortion and column-to-column offset using
+the gorila software package. Return an instance of a TagCamsCamera with the images loaded in."""
+
+
 # specify the initial guess at the camera model (Brown Model)
 # field of view of the camera (only used for querying the star catalogues)
 fov = 60
@@ -32,8 +37,12 @@ ncmodel = BrownModel(focal_x=focal_x, focal_y=focal_y, princpoint_x=princ_point_
                      use_apriori=False, estimation_parameters=['intrinsic', 'single misalignment'])
 
 
-# Load in an instance of TagCamsCamera with images from the given directory
 def load_tagcam(directories):
+    """ Load in an instance of TagCamsCamera with images from the given directory
+
+    :param directories: The location of the raw files
+    :return: A TagCamsCamera with the corrected images
+    """
     images = []
 
     for directory in directories:
@@ -46,13 +55,18 @@ def load_tagcam(directories):
 
 
 def load_directory(directory):
+    """ Grab a list of all the file names to be loaded from a directory
+
+    :param directory: The location of the raw files
+    :return: A list of all file names in the directory
+    """
     images = []
 
     # Traverse the files in the given directory
     for file in os.listdir(directory):
         file_name = os.path.join(directory, file)
-        # Make sure its a file and not a directory/folder
-        if not os.path.isdir(file_name):
+        # Make sure its a file and not a directory/folder and that it has the correct extension
+        if not os.path.isdir(file_name) and ".img_" in file_name:
             images.append(file_name)
 
     return images

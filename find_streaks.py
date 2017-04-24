@@ -5,12 +5,19 @@ from skimage.feature import canny
 from skimage.transform import probabilistic_hough_line
 from matplotlib import pyplot as plt
 
-# Script purpose: Identify potential streaks/particles in a set of images
+__doc__ = """
+Identify potential streaks/particles in a set of images. The NavCam2 day 100 images exhibit a large number
+of streaks in the images and there is now a push to figure out the cause.
+
+"""
 
 
-# Dates comes in the format 2017.234324 have to convert that fraction
-# into a precise date
 def parse_time(obsdate):
+    """ Take the date from the image header and format it into a datetime object
+
+    :param obsdate: The date in the format of year and fraction of year 2017.234324
+    :return: A datetime object holding the exact date and time the exposure began
+    """
 
     fraction = str(obsdate)[4:]
     days = float(fraction) * 365.25
@@ -31,16 +38,15 @@ def plot_lines(lines):
         plt.plot((p0[0], p1[0]), (p0[1], p1[1]))
 
 
-# Distance between two points
 def distance(point_one, point_two):
+    """The distance between two points"""
     x1, y1 = point_one
     x2, y2 = point_two
     return np.sqrt((x2 - x1)**2 + (y2-y1)**2)
 
 
-# Most of the lines repeat next to each other
-# Only count the lines that are not neighbors
-# TODO: Refactor
+# Most of the lines repeat next to each other. Only count the lines that are not neighbors
+# TODO Completely rewrite or remove entirely
 def count_unique_lines(lines):
 
     unique_points = []
