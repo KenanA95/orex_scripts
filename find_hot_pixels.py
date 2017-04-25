@@ -115,8 +115,19 @@ if __name__ == "__main__":
     y_overlap = [o[0] for o in overlap]
 
     # Circle the locations on an empty image so that the people can overlay it onto new images
-    blank_active = np.zeros((1944, 2592))
-    plt.imshow(blank_active, cmap='gray', interpolation='nearest')
-    plt.scatter(x_overlap, y_overlap, color='none', edgecolors='red', linewidths=1)
-    plt.axis('off')
-    plt.savefig('hot_pixels.png', bbox_inches='tight')
+    # To save the image in exact pixel size use figure.set_size_inches(). Nothing else works
+    # consistently
+
+    empty_image = np.zeros((2004, 2752))
+    fig = plt.figure(frameon=False)
+    fig.set_size_inches(27.52, 20.04)
+
+    ax = plt.Axes(fig, [0., 0., 1., 1.])
+    ax.set_axis_off()
+    fig.add_axes(ax)
+
+    ax.imshow(empty_image, aspect='normal', cmap='gray')
+
+    # Adjust for the dark pixel columns that surround the NavCam images
+    ax.scatter(np.add(x_overlap, 144), np.add(y_overlap, 54), color='none', edgecolors='red', linewidths=1)
+    fig.savefig('hot_pixels.png', dpi=100)
