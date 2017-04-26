@@ -23,7 +23,7 @@ class SyntheticImage:
     def generate_image(self, exposure):
         image = self.generate_background()
         stars = self.generate_stars(exposure)
-        image = self.place_stars(image, stars)
+        image = self.place_stars_randomly(image, stars)
         image += self.gaussian_noise()
         return image
 
@@ -32,8 +32,8 @@ class SyntheticImage:
         background = np.random.normal(self.background_mean, self.background_std, pixel_count)
         return background.reshape((self.height, self.width))
 
-    def generate_stars(self, exposure):
-        max_dn = estimate_max_dn(exposure)
+    def generate_stars(self, exposure, gain=1):
+        max_dn = estimate_max_dn(exposure, gain)
         stars = []
         for index in range(self.star_count):
             star = generate_2d_gaussian(size=15, star_diameter=np.random.randint(1, 8))
@@ -44,7 +44,7 @@ class SyntheticImage:
 
         return stars
 
-    def place_stars(self, image, stars):
+    def place_stars_randomly(self, image, stars):
         x_lim = image.shape[1] - stars[0].shape[0]
         y_lim = image.shape[0] - stars[0].shape[1]
 
@@ -101,10 +101,11 @@ def degrade_image(im, psf, downsample, shift_range):
 
 
 # TODO
-def estimate_max_dn(exposure):
+def estimate_max_dn(exposure, gain=1):
     """ Using previous data, estimate how bright the star should be given the exposure time.
 
     :param exposure: Exposure time in seconds of the synthetic image
+    :param gain: Gain of the synthetic image
     :return: The value of the brightest pixel in the star
     """
     return np.random.randint(100*exposure, 500*exposure)
