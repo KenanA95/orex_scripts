@@ -5,19 +5,24 @@ from skimage.transform import downscale_local_mean
 from scipy.ndimage import fourier_shift
 
 
+__doc__ = """ Generate synthetic images for testing purposes.
+
+TODO - Base star brightness off of image exposure and gain
+"""
+
+
 class SyntheticImage:
 
-    def __init__(self, shape, background_mean, background_std, exposure, psf, star_count):
+    def __init__(self, shape, background_mean, background_std, psf, star_count):
         self.height, self.width = shape
         self.background_mean = background_mean
         self.background_std = background_std
-        self.exposure = exposure
         self.star_count = star_count
         self.psf = psf
 
-    def generate_image(self):
+    def generate_image(self, exposure):
         image = self.generate_background()
-        stars = self.generate_stars()
+        stars = self.generate_stars(exposure)
         image = self.place_stars(image, stars)
         image += self.gaussian_noise()
         return image
@@ -27,11 +32,12 @@ class SyntheticImage:
         background = np.random.normal(self.background_mean, self.background_std, pixel_count)
         return background.reshape((self.height, self.width))
 
-    def generate_stars(self):
-
+    def generate_stars(self, exposure):
+        max_dn = estimate_max_dn(exposure)
         stars = []
         for index in range(self.star_count):
-            star = generate_2d_gaussian(size=15, star_diameter=np.random.randint(1, 7)) * 500
+            star = generate_2d_gaussian(size=15, star_diameter=np.random.randint(1, 8))
+            star = scale_array(star, max_dn)
             star = degrade_image(star, self.psf, downsample=4, shift_range=(-2, 2))
             star += self.background_mean
             stars.append(star)
@@ -56,6 +62,12 @@ class SyntheticImage:
 
 
 def generate_2d_gaussian(size, star_diameter):
+    """ Generate a 2d Gaussian as the starting point for creating a fake star to place in the image
+
+    :param size: The size of the image
+    :param star_diameter: The diameter of the 2 dimensional gaussian in the center of the image
+    :return: An image with a 2d gaussian placed in the center
+    """
     x = np.arange(0, size, 1, float)
     y = x[:, np.newaxis]
 
@@ -65,6 +77,16 @@ def generate_2d_gaussian(size, star_diameter):
 
 
 def degrade_image(im, psf, downsample, shift_range):
+    """ Degrade the 2d gaussian through a shift, convolution, and downsample to create a realistic version of what a
+    star might look like in the NavCam images.
+
+    :param im: The image of the 2d gaussian to degrade
+    :param psf: The point spread function to blur the image with
+    :param downsample: How much to downsample the image by
+    :param shift_range: The range of pixels to choose how much shift to apply
+    :return: The shifted, blurred, and downsampled image of the 2d gaussian
+    """
+
     shift = np.random.randint(shift_range[0], shift_range[1], (1, 2))[0]
 
     # Add shift
@@ -78,15 +100,31 @@ def degrade_image(im, psf, downsample, shift_range):
     return im
 
 
+# TODO
+def estimate_max_dn(exposure):
+    """ Using previous data, estimate how bright the star should be given the exposure time.
+
+    :param exposure: Exposure time in seconds of the synthetic image
+    :return: The value of the brightest pixel in the star
+    """
+    return np.random.randint(100*exposure, 500*exposure)
+
+
+def scale_array(arr, new_max):
+    """Scale   """
+    arr *= (new_max / arr.max())
+    return arr
+
+
 # Example usage
 if __name__ == "__main__":
 
     psf = np.ones((3, 3)) / 3**2
 
-    synthetic = SyntheticImage(shape=(1944, 2592), background_mean=100, background_std=1.4, exposure=2,
-                               psf=psf, star_count=50)
+    synthetic = SyntheticImage(shape=(1944, 2592), background_mean=100, background_std=0.8, psf=psf, star_count=50)
 
-    img = synthetic.generate_image()
+    im_one = synthetic.generate_image(exposure=1)
+    im_two = synthetic.generate_image(exposure=20)
 
-    plt.imshow(img, cmap='gray', interpolation='none')
+    plt.imshow(im_one, cmap='gray', interpolation='none')
     plt.show()
