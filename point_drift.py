@@ -6,8 +6,7 @@ import numpy as np
 from skimage.feature import register_translation
 
 __doc__ = """
-Point-to-point correspondence between star centroids to model the spacecraft motion
-during the launch 14 day images
+Point-to-point correspondence between star centroids to model the spacecraft motion during the launch 14 day images
 """
 
 
@@ -69,8 +68,8 @@ if __name__ == "__main__":
     nc1_directory = 'C:/Users/kalkiek/Desktop/repos/data/navcam1/L14/'
     nc2_directory = 'C:/Users/kalkiek/Desktop/repos/data/navcam2/L14/'
 
-    navcam1 = load_tagcam(nc1_directory)
-    navcam2 = load_tagcam(nc2_directory)
+    navcam1 = load_tagcam(directories=[nc1_directory])
+    navcam2 = load_tagcam(directories=[nc2_directory])
 
     # Locations of the 10 brightest stars according to the longest exposure image
     nc1_locations = star_locations(navcam1.images[-1], n=10, sigma=2)
