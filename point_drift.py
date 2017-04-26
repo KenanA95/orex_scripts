@@ -1,5 +1,5 @@
 from load_tagcam import load_tagcam
-from extract_stars import brightest_locations, extract_locations
+from extract_stars import star_locations, extract_stars
 from scipy import ndimage
 from skimage.filters import threshold_otsu
 import numpy as np
@@ -35,8 +35,8 @@ def centroid_shift(im_one, im_two, star_locations):
     :return: Average x, y centroid movement
     """
 
-    stars_one = extract_locations(im_one, star_locations, size=9)
-    stars_two = extract_locations(im_two, star_locations, size=9)
+    stars_one = extract_stars(im_one, star_locations, size=9)
+    stars_two = extract_stars(im_two, star_locations, size=9)
 
     x_diffs, y_diffs = [], []
     for index in range(len(stars_one)):
@@ -73,8 +73,8 @@ if __name__ == "__main__":
     navcam2 = load_tagcam(nc2_directory)
 
     # Locations of the 10 brightest stars according to the longest exposure image
-    nc1_locations = brightest_locations(navcam1.images[-1], n=10, sigma=2)
-    nc2_locations = brightest_locations(navcam2.images[-1], n=10, sigma=2)
+    nc1_locations = star_locations(navcam1.images[-1], n=10, sigma=2)
+    nc2_locations = star_locations(navcam2.images[-1], n=10, sigma=2)
 
     diffs = centroid_shift(np.array(navcam1.images[-3]).astype(float),
                            np.array(navcam1.images[-1]).astype(float), nc1_locations)
