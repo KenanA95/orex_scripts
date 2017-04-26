@@ -37,7 +37,8 @@ class SyntheticImage:
         stars = []
         for index in range(self.star_count):
             star = generate_2d_gaussian(size=15, star_diameter=np.random.randint(1, 8))
-            star = scale_array(star, max_dn)
+            # Scale so that the brightest pixel matches the estimation
+            star *= (max_dn / star.max())
             star = degrade_image(star, self.psf, downsample=4, shift_range=(-2, 2))
             star += self.background_mean
             stars.append(star)
@@ -109,12 +110,6 @@ def estimate_max_dn(exposure, gain=1):
     :return: The value of the brightest pixel in the star
     """
     return np.random.randint(100*exposure, 500*exposure)
-
-
-def scale_array(arr, new_max):
-    """Scale   """
-    arr *= (new_max / arr.max())
-    return arr
 
 
 # Example usage
