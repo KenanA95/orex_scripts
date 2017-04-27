@@ -57,13 +57,13 @@ if __name__ == "__main__":
 
     directory = 'C:/Users/kalkiek/Desktop/repos/data/navcam2/DAY100/'
 
-    navcam2 = load_tagcam([directory])
+    navcam = load_tagcam([directory])
 
-    for index, im in enumerate(navcam2.images):
+    for index, im in enumerate(navcam.images):
 
         # No sigma because if you smooth the image you'll lose the dim streaks
         edges = canny(im, sigma=0)
-        lines = probabilistic_hough_line(edges, threshold=5, line_length=7,
+        lines = probabilistic_hough_line(edges, threshold=1, line_length=6,
                                          line_gap=1)
 
         if lines:
