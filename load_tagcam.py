@@ -1,6 +1,9 @@
 import os
 from gorila.cameramodels import BrownModel
 from orex_setup import TagCamsCamera
+import numpy as np
+from skimage import io
+
 
 __doc__ = """
 Read in the raw TAGCAMS files in a directory and correct the distortion and column-to-column offset using
@@ -70,3 +73,25 @@ def load_directory(directory):
             images.append(file_name)
 
     return images
+
+
+def raw_2_png(source_directory, destination):
+    """ Convert raw NavCam images in a directory to PNG files
+
+    :param source_directory: The directory that holds the raw image files
+    :param destination: Where you want the PNG files to be saved to
+    :return:
+    """
+    file_names = load_directory(source_directory)
+    navcam = load_tagcam(directories=[source_directory])
+
+    for index, im in enumerate(navcam.images):
+        # Correct the orientation from the raw read function
+        im = np.fliplr(im)
+
+        # Use the last 4 digits before the file extension as the identifier. They're always unique
+        id_position = file_names[index].rfind('.') - 4
+        f_id = file_names[index][id_position: id_position+4]
+        f_name = destination + f_id + ".png"
+
+        io.imsave(f_name, im)
