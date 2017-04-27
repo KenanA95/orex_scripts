@@ -14,8 +14,8 @@ Pre-process the images with a canny edge detector and use a hough transformation
 
 def plot_lines(lines):
     for line in lines:
-        p0, p1 = line
-        plt.plot((p0[0], p1[0]), (p0[1], p1[1]))
+        (x0, y0), (x1, y1) = line
+        plt.plot((x0, x1), (y0, y1))
 
 
 def distance(point_one, point_two):
@@ -30,7 +30,7 @@ def count_streaks(lines, dist=25):
     streaks, only count lines that are a given distance from one another.
 
 
-    :param lines: The lines identified by the hough transformation
+    :param lines: The lines identified by the hough transformation in format ((x0, y0), (x1, y1))
     :param dist: Distance in pixels
     :return: The number of streaks
     """
@@ -66,7 +66,10 @@ if __name__ == "__main__":
         lines = probabilistic_hough_line(edges, threshold=5, line_length=7,
                                          line_gap=1)
 
-        print("Index {0}: Streak Count {1}".format(index, count_streaks(lines)))
+        if lines:
+            print("Index {0}: Streak Count {1}".format(index, count_streaks(lines)))
+        else:
+            print("Index {0}: Streak Count 0".format(index))
 
         # Plot the streaks on the original image
         # plt.imshow(im, cmap='gray', interpolation='none')
