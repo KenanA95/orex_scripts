@@ -52,6 +52,28 @@ def count_streaks(lines, dist=25):
     return len(unique_points)
 
 
+def find_streaks(image):
+    """ Identify potential streaks/particles in a set of images using canny edge detector and probabilistic hough lines
+
+    :param image: The image to look for the streaks in
+    :return: The number of streaks identified in the image
+    """
+    # No sigma because if you smooth the image you'll lose the dim streaks
+    edges = canny(image, sigma=0)
+
+    lines = probabilistic_hough_line(edges, threshold=1, line_length=6,
+                                     line_gap=1)
+
+    if lines:
+        # Plot the streaks on the image
+        # plt.imshow(im, cmap='gray', interpolation='none')
+        # plot_lines(lines)
+        # plt.show()
+
+        return count_streaks(lines)
+
+    return 0
+
 # Example usage
 if __name__ == "__main__":
 
@@ -60,18 +82,5 @@ if __name__ == "__main__":
     navcam = load_tagcam([directory])
 
     for index, im in enumerate(navcam.images):
-
-        # No sigma because if you smooth the image you'll lose the dim streaks
-        edges = canny(im, sigma=0)
-        lines = probabilistic_hough_line(edges, threshold=1, line_length=6,
-                                         line_gap=1)
-
-        if lines:
-            print("Index {0}: Streak Count {1}".format(index, count_streaks(lines)))
-        else:
-            print("Index {0}: Streak Count 0".format(index))
-
-        # Plot the streaks on the original image
-        # plt.imshow(im, cmap='gray', interpolation='none')
-        # plot_lines(lines)
-        # plt.show()
+        streak_count = find_streaks(im)
+        print("Index {0}: Streak Count {1}".format(index, streak_count))
