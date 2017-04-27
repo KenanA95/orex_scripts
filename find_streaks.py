@@ -66,7 +66,7 @@ def find_streaks(image):
 
     if lines:
         # Plot the streaks on the image
-        # plt.imshow(im, cmap='gray', interpolation='none')
+        # plt.imshow(image, cmap='gray', interpolation='none')
         # plot_lines(lines)
         # plt.show()
 
