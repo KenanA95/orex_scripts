@@ -65,7 +65,7 @@ def active_coordinates(im, active_threshold):
     return set(active_coords)
 
 
-def active_overlap(navcam, sigma):
+def find_hps(images, sigma):
     """ Find the intersection of the active coordinates for every image in the set
 
     :param navcam: Instance of a TagCamsCamera that holds the corrected images
@@ -75,7 +75,7 @@ def active_overlap(navcam, sigma):
 
     active_coords = {}
 
-    for index, im in enumerate(navcam.images):
+    for index, im in enumerate(images):
         active_threshold = im.mean() + (sigma * im.std())
         active_coords[index] = active_coordinates(im, active_threshold)
 
@@ -106,7 +106,7 @@ if __name__ == "__main__":
 
     navcam = load_tagcam(directories=[directory_day100])
 
-    overlap = active_overlap(navcam, sigma=4)
+    overlap = find_hps(navcam.images, sigma=4)
 
     print("Located {0} overlapping active pixels".format(len(overlap)))
 
