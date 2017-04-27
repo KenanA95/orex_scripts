@@ -7,12 +7,12 @@ from collections import defaultdict
 __doc__ = """
 Check for hot/dead pixels in the NavCam images. Hot pixels are pixels that incorrectly show activity.
 Since the error exists on the hardware side, hot pixels will always remain in the same location. The idea is to
-find an overlap of pixels that show activity in every image that are not a part of a star
+find an overlap of pixels that show activity in every image that are not a part of a star.
 
-One idea that was implemented and later retracted was to identify the stars in the image and exclude their projected
-locations as potential hot pixels. The issue is that most of the images from a given set do not point at the
-same location. One possible solution is to identify the location of every single image, but that can be very
-computationally expensive and does not seem to produce better results.
+One idea that was implemented and later retracted was to identify the stars in the image using quaternions and
+exclude their projected locations as potential hot pixels. The issue is that most of the images from a given set
+do not point at the same location. One possible solution is to identify the location of every single image,
+but that can be very computationally expensive and does not seem to produce better results.
 
 """
 
@@ -88,7 +88,7 @@ def get_hp_values(images, hp_locs):
 
     :param images: The images to grab the hot pixel value from
     :param hp_locs: The locations of the hot pixels
-    :return: A dictionary that holds a list of the hot pixel values for every image
+    :return: A dictionary that holds a list of the hot pixel values for every image using the index as keys
     """
     hp_values = defaultdict(list)
 
@@ -103,11 +103,10 @@ def get_hp_values(images, hp_locs):
 if __name__ == "__main__":
 
     directory_day100 = 'C:/Users/kalkiek/Desktop/repos/data/navcam1/DAY100/'
-    directory_l14 = 'C:/Users/kalkiek/Desktop/repos/data/navcam1/L14/'
 
-    navcam1 = load_tagcam(directories=[directory_day100])
+    navcam = load_tagcam(directories=[directory_day100])
 
-    overlap = active_overlap(navcam1, sigma=4)
+    overlap = active_overlap(navcam, sigma=4)
 
     print("Located {0} overlapping active pixels".format(len(overlap)))
 
