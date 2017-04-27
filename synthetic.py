@@ -11,7 +11,7 @@ TODO - Base star brightness off of image exposure and gain
 """
 
 
-class SyntheticImage:
+class Synthetic:
 
     def __init__(self, shape, background_mean, background_std, psf, star_count):
         self.height, self.width = shape
@@ -117,7 +117,7 @@ if __name__ == "__main__":
 
     psf = np.ones((3, 3)) / 3**2
 
-    synthetic = SyntheticImage(shape=(1944, 2592), background_mean=100, background_std=0.8, psf=psf, star_count=50)
+    synthetic = Synthetic(shape=(1944, 2592), background_mean=100, background_std=0.8, psf=psf, star_count=50)
 
     im_one = synthetic.generate_image(exposure=1)
     im_two = synthetic.generate_image(exposure=20)
