@@ -15,9 +15,9 @@ Read in the raw TAGCAMS files in a directory and correct the distortion and colu
 ***
 
 
-#### `synthetic_image.py`
+#### `synthetic.py`
 
-Generate a synthetic image to mimic the NavCam images for testing purposes.
+Generates synthetic images to mimic the NavCam images for testing purposes.
 
 ***
 
