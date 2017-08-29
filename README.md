@@ -1,6 +1,6 @@
 ## Introduction
 
-Throughout my internship, image processing tasks would come and go at a quick rate. To centralize and document the code being developed, I kept all of the individual programs under a single repository. 
+Throughout my internship working on the OSIRIS-REx TAGCAMS images, processing tasks would come and go at a quick rate. To centralize and document the code being developed, I kept all of the individual programs under a single repository. 
 
 
 An in-house library was used to load the images from their native format and correct image distortion and column-to-column offsets.
